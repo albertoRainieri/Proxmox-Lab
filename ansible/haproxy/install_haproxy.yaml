@@ -1,0 +1,31 @@
+- name: install haproxy
+  hosts: ""
+  remote_user: 'root'
+  vars:
+    - file_conf: "proxmox_haproxy.cfg.j2" #common_haproxy.cfg.j2 proxmox_haproxy.cfg.j2
+
+  tasks:
+
+    - name: install haproxy
+      package: 
+        name: haproxy
+        state: present
+      notify:
+       - restart haproxy
+
+
+    - name: copy configuration file
+      template: 
+        src: "{{file_conf}}"
+        dest: /etc/haproxy/haproxy.cfg
+      notify: 
+        - restart haproxy
+
+  handlers:
+
+    - name: restart haproxy
+      service:
+        name: haproxy
+        state: restarted
+        enabled: true
+    

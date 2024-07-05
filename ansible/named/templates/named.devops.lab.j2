@@ -1,0 +1,19 @@
+$TTL 1W
+@	IN	SOA	common.devops.lab.	root (
+			2019070700	; serial
+			3H		; refresh (3 hours)
+			30M		; retry (30 minutes)
+			2W		; expiry (2 weeks)
+			1W )		; minimum (1 week)
+	IN	NS	common.devops.lab.
+;
+;
+
+common.devops.lab.              IN      A       192.168.2.10
+devops.lab.                     IN      A       192.168.2.10
+rancher-1.devops.lab.		    IN	    A	192.168.2.21
+rancher-2.devops.lab.		    IN	    A	192.168.2.22
+rancher-3.devops.lab.		    IN	    A	192.168.2.23
+cluster.rancher.devops.lab.     IN      A       51.178.68.233
+gui.rancher.devops.lab.         IN      A       51.178.68.233
+;EOF

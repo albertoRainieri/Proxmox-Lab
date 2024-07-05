@@ -1,0 +1,32 @@
+- name: install named
+  hosts: "common"
+  remote_user: 'root'
+
+  tasks:
+
+    - name: install named
+      package: 
+        name: bind9
+        state: present
+      notify: 
+        - restart named
+    
+    - name: copy zone dns 
+      template:
+        src: nomad.conf.js
+        dest: /etc/nomad.conf
+      notify: restart named
+    
+    - name: copy entry dns 
+      template:
+        src: named.devops.lab.j2
+        dest: /var/nomad/named.devops.lab
+      notify: restart named
+    
+  handlers:
+
+   - name: restart named
+     service:
+      name: named
+      state: restarted
+      enabled: true

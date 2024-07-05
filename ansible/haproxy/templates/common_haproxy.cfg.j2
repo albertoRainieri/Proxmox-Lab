@@ -1,0 +1,96 @@
+#---------------------------------------------------------------------
+# Example configuration for a possible web application.  See the
+# full configuration options online.
+#
+#   https://www.haproxy.org/download/1.8/doc/configuration.txt
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+    # to have these messages end up in /var/log/haproxy.log you will
+    # need to:
+    #
+    # 1) configure syslog to accept network log events.  This is done
+    #    by adding the '-r' option to the SYSLOGD_OPTIONS in
+    #    /etc/sysconfig/syslog
+    #
+    # 2) configure local2 events to go to the /var/log/haproxy.log
+    #   file. A line like the following can be added to
+    #   /etc/sysconfig/syslog
+    #
+    #    local2.*                       /var/log/haproxy.log
+    #
+    log         127.0.0.1 local2
+
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats
+
+    # utilize system-wide crypto-policies
+    ssl-default-bind-ciphers PROFILE=SYSTEM
+    ssl-default-server-ciphers PROFILE=SYSTEM
+
+
+defaults
+	log	global
+	mode	http
+        timeout connect 5000
+        timeout client  50000
+        timeout server 1m
+
+listen rancher-internal-9345
+  bind *:9345
+  mode tcp
+  balance roundrobin
+  server rancher-1 rancher-1.devops.lab:9345 verify none check
+  server rancher-2 rancher-2.devops.lab:9345 verify none check
+  server rancher-3 rancher-3.devops.lab:9345 verify none check
+
+frontend minio-frontend-9101
+  bind *:9101
+  mode tcp
+  acl is_minio_host hdr(host) -i minio.devops.lab
+  use_backend minio-backend-9001 if is_minio_host
+
+backend minio-backend-9001
+  mode tcp
+  balance roundrobin
+  server minio-1 minio.devops.lab:9001 verify none check
+
+frontend rancher-frontend-6443
+  bind *:6443
+  mode tcp
+  default_backend rancher-backend-6443
+  acl is_rancher_host hdr(host) -i cluster.rancher.devops.lab
+  use_backend rancher-backend-6443 if is_rancher_host
+
+backend rancher-backend-6443
+  mode tcp
+  balance roundrobin
+  server rancher-1 rancher-1.devops.lab:6443 verify none check
+  server rancher-2 rancher-2.devops.lab:6443 verify none check
+  server rancher-3 rancher-3.devops.lab:6443 verify none check
+
+
+frontend rancher-frontend-gui
+  bind *:443
+  mode tcp
+  default_backend rancher-backend-gui
+  acl is_rancher_host hdr(host) -i *.rancher.devops.lab
+  use_backend rancher-backend-gui if is_rancher_host
+
+backend rancher-backend-gui
+  mode tcp
+  balance roundrobin
+  server rancher-1 rancher-1.devops.lab:443 verify none check
+  server rancher-2 rancher-2.devops.lab:443 verify none check
+  server rancher-3 rancher-3.devops.lab:443 verify none check

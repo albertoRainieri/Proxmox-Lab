@@ -1,0 +1,4 @@
+terraform-instance/variables.tf
+terraform-instance/terraform.tfstate.backup
+terraform-instance/terraform.tfstate
+.terraform.lock.hcl
