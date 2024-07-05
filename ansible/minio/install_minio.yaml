@@ -36,8 +36,6 @@
         owner: "minio-user"
         group: "minio-user"
         mode: 0750
-  
-  handlers:
 
     - name: Enable and restart the Minio service
       service:
