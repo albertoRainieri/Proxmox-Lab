@@ -4,3 +4,4 @@ terraform-instance/terraform.tfstate
 .terraform.lock.hcl
 ansible/minio/templates/minio
 access
+backend.tf
