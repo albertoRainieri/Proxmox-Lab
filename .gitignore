@@ -5,3 +5,4 @@ terraform-instance/terraform.tfstate
 ansible/minio/templates/minio
 access
 backend.tf
+.terraform
