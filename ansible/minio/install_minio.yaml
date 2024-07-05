@@ -1,0 +1,46 @@
+- name: install named
+  hosts: "common"
+  remote_user: 'root'
+  tasks:  
+    
+    - name: download minio
+      cmd: wget https://dl.min.io/server/minio/release/linux-amd64/archive/minio-20240628090649.0.0-1.x86_64.rpm -O minio.rpm  
+   
+    - name: install minio
+      package:
+        name: minio.rpm
+    
+    - name: create service
+      template:
+        src: minio.service.j2
+        dest: /usr/lib/systemd/system/minio.service
+        owner: "root"
+        group: "root"
+    
+    - name: Create Minio group
+      group:
+       name: "minio-user"
+       state: present
+
+    - name: Create Minio user
+      user:
+        name: "minio-user"
+        group: "minio-user"
+        system: "yes"
+        shell: "/usr/sbin/nologin"
+    
+    - name: Create the Minio data storage directories
+      file:
+        path: "/bucket"
+        state: directory
+        owner: "minio-user"
+        group: "minio-user"
+        mode: 0750
+  
+  handlers:
+
+    - name: Enable and restart the Minio service
+      service:
+        name: minio
+        state: restarted
+        enabled: true

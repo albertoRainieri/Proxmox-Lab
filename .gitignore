@@ -3,3 +3,4 @@ terraform-instance/terraform.tfstate.backup
 terraform-instance/terraform.tfstate
 .terraform.lock.hcl
 ansible/minio/templates/minio
+access
