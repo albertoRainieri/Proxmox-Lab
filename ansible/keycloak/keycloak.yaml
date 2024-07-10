@@ -1,0 +1,2 @@
+wget https://github.com/keycloak/keycloak/releases/download/25.0.1/keycloak-25.0.1.zip
+unzip keycloak-25.0.1.zip
