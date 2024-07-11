@@ -3,9 +3,9 @@ resource "proxmox_vm_qemu" "vm-terraform" {
   name        = "test-tf"
   target_node = var.proxmox_host
   clone       = var.template_name
-  os_type     = "cloud-init"
+  # os_type     = "cloud-init"
   memory      = 2048
-  cpu         = "kvm64"
+  # cpu         = "kvm64"
   cores       = 2
   vmid        = "120"
   bootdisk    = "data"
