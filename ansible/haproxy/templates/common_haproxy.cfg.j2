@@ -58,7 +58,7 @@ listen rancher-internal-9345
 frontend http-8081
   mode http
   bind *:8081
-  acl is_minio_host       hdr(host) -i minio
+  acl is_minio_host       hdr(host) -i minio.devops.lab
   acl is_keycloak         hdr(host) -i keycloak.devops.lab
   acl is_rancher_gui      hdr(host) -i *.rancher.devops.lab
 
