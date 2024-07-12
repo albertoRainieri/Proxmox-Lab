@@ -1,5 +1,5 @@
 - name: install haproxy
-  hosts: "{{ host }}"
+  hosts: "common"
   remote_user: 'root'
   vars:
     - file_conf: "common_haproxy.cfg.j2" #common_haproxy.cfg.j2 proxmox_haproxy.cfg.j2

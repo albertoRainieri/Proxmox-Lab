@@ -57,6 +57,8 @@ listen rancher-internal-9345
 
 frontend http-8081
   mode http
+  http-request set-header X-Url-Scheme: https
+  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
   bind *:8081
   acl is_minio_host       hdr(host) -i minio.devops.lab
   acl is_keycloak         hdr(host) -i keycloak.devops.lab
@@ -68,6 +70,8 @@ frontend http-8081
 
 frontend tcp-8082
   mode tcp
+  http-request set-header X-Url-Scheme: https
+  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
   bind *:8082
   acl is_rancher_cluster  hdr(host) -i cluster.rancher.devops.lab
 
