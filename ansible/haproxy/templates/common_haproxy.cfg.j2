@@ -43,9 +43,9 @@ global
 defaults
 	log	global
 	mode	http
-        timeout connect 5000
-        timeout client  50000
-        timeout server 1m
+  timeout connect 5000
+  timeout client  50000
+  timeout server 1m
 
 listen rancher-internal-9345
   bind *:9345
@@ -55,23 +55,30 @@ listen rancher-internal-9345
   server rancher-2 rancher-2.devops.lab:9345 verify none check
   server rancher-3 rancher-3.devops.lab:9345 verify none check
 
-frontend minio-frontend-9101
-  bind *:9101
+frontend http-8081
+  mode http
+  bind *:8081
+  acl is_minio_host       hdr(host) -i minio
+  acl is_keycloak         hdr(host) -i keycloak.devops.lab
+  acl is_rancher_gui      hdr(host) -i *.rancher.devops.lab
+
+  use_backend minio-backend-9001    if is_minio_host
+  use_backend keycloak-backend      if is_keycloak
+  use_backend rancher-backend-gui   if is_rancher_gui
+
+frontend tcp-8082
   mode tcp
-  acl is_minio_host hdr(host) -i minio.devops.lab
-  use_backend minio-backend-9001 if is_minio_host
+  bind *:8082
+  acl is_rancher_cluster  hdr(host) -i cluster.rancher.devops.lab
+
+  use_backend rancher-backend-6443  if is_rancher_cluster
+
+
 
 backend minio-backend-9001
-  mode tcp
+  mode http
   balance roundrobin
   server minio-1 minio.devops.lab:9001 verify none check
-
-frontend rancher-frontend-6443
-  bind *:6443
-  mode tcp
-  default_backend rancher-backend-6443
-  acl is_rancher_host hdr(host) -i cluster.rancher.devops.lab
-  use_backend rancher-backend-6443 if is_rancher_host
 
 backend rancher-backend-6443
   mode tcp
@@ -80,17 +87,14 @@ backend rancher-backend-6443
   server rancher-2 rancher-2.devops.lab:6443 verify none check
   server rancher-3 rancher-3.devops.lab:6443 verify none check
 
-
-frontend rancher-frontend-gui
-  bind *:443
-  mode tcp
-  default_backend rancher-backend-gui
-  acl is_rancher_host hdr(host) -i *.rancher.devops.lab
-  use_backend rancher-backend-gui if is_rancher_host
-
 backend rancher-backend-gui
-  mode tcp
+  mode http
   balance roundrobin
   server rancher-1 rancher-1.devops.lab:443 verify none check
   server rancher-2 rancher-2.devops.lab:443 verify none check
   server rancher-3 rancher-3.devops.lab:443 verify none check
+
+backend keycloak-backend
+  mode http
+  balance roundrobin
+  server keycloack-1 keycloak.devops.lab:8888 verify none check

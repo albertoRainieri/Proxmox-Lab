@@ -21,9 +21,9 @@ defaults
 	log	global
 	mode	http
 	option	dontlognull
-        timeout connect 5000
-        timeout client  50000
-        timeout server  50000
+  timeout connect 5000
+  timeout client  50000
+  timeout server  50000
 	errorfile 400 /etc/haproxy/errors/400.http
 	errorfile 403 /etc/haproxy/errors/403.http
 	errorfile 408 /etc/haproxy/errors/408.http
@@ -40,46 +40,18 @@ listen rancher-internal-9345
   balance roundrobin
   server common 192.168.2.10:9345 verify none check
 
-listen api-server-6443
-  bind *:6443
-  mode tcp
+listen http-8081
+  mode http
+  bind *:8081
   http-request set-header X-Url-Scheme: https
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
   balance roundrobin
-  server common 192.168.2.10:6443 verify none check
+  server common 192.168.2.10:8081 verify none check
 
-listen https-server-443
-  bind *:443
+listen tcp-8082
   mode tcp
+  bind *:8082
   http-request set-header X-Url-Scheme: https
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
   balance roundrobin
-  server common 192.168.2.10:443 verify none check
-
-listen https-server-80
-  bind *:80
-  mode tcp
-  balance roundrobin
-  server common 192.168.2.10:80 verify none check
-
-listen https-server-8080
-  bind *:8080
-  mode tcp
-  balance roundrobin
-  server common 192.168.2.10:8080 verify none check
-
-listen minio-9000
-  bind *:9000
-  mode tcp
-  http-request set-header X-Url-Scheme: https
-  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-  balance roundrobin
-  server common 192.168.2.10:9000 verify none check
-
-listen minio-9001
-  bind *:9001
-  mode tcp
-  http-request set-header X-Url-Scheme: https
-  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-  balance roundrobin
-  server common 192.168.2.10:9001
+  server common 192.168.2.10:8082 verify none check
