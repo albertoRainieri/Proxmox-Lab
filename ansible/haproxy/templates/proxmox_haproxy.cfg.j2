@@ -45,6 +45,7 @@ listen http-8081
   bind *:8081
   http-request set-header X-Url-Scheme: https
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+  http-request replace-header Host ([^:]+) \1
   balance roundrobin
   server common 192.168.2.10:8081 verify none check
 
