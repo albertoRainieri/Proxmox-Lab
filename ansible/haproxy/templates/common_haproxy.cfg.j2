@@ -55,11 +55,11 @@ listen rancher-internal-9345
   server rancher-2 rancher-2.devops.lab:9345 verify none check
   server rancher-3 rancher-3.devops.lab:9345 verify none check
 
-frontend http-8081
+frontend http-8080
   mode http
   http-request set-header X-Url-Scheme: https
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-  bind *:8081
+  bind *:8080
   acl is_minio_host       hdr(host) -i minio.devops.lab
   acl is_keycloak         hdr(host) -i keycloak.devops.lab
   acl is_rancher_gui      hdr(host) -i *.rancher.devops.lab
@@ -68,16 +68,20 @@ frontend http-8081
   use_backend keycloak-backend      if is_keycloak
   use_backend rancher-backend-gui   if is_rancher_gui
 
-frontend tcp-8082
+frontend k8s-api-6443
   mode tcp
   http-request set-header X-Url-Scheme: https
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-  bind *:8082
+  bind *:6443
   acl is_rancher_cluster  hdr(host) -i cluster.rancher.devops.lab
 
   use_backend rancher-backend-6443  if is_rancher_cluster
 
-
+frontend http-443
+  mode https
+  http-request set-header X-Url-Scheme: https
+  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+  bind *:443
 
 backend minio-backend-9001
   mode http

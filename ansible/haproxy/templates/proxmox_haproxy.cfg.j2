@@ -40,19 +40,27 @@ listen rancher-internal-9345
   balance roundrobin
   server common 192.168.2.10:9345 verify none check
 
-listen http-8081
+listen k8s-api-6443
+  bind *:6443
+  mode tcp
+  http-request set-header X-Url-Scheme: https
+  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+  balance roundrobin
+  server common 192.168.2.10:6443 verify none check
+
+listen http-8080
   mode http
-  bind *:8081
+  bind *:8080
   http-request set-header X-Url-Scheme: https
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
   http-request replace-header Host ([^:]+) \1
   balance roundrobin
-  server common 192.168.2.10:8081 verify none check
+  server common 192.168.2.10:8080 verify none check
 
-listen tcp-8082
-  mode tcp
-  bind *:8082
+listen https-443
+  mode http
+  bind *:443
   http-request set-header X-Url-Scheme: https
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
   balance roundrobin
-  server common 192.168.2.10:8082 verify none check
+  server common 192.168.2.10:443 verify none check
