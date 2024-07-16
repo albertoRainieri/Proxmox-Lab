@@ -62,11 +62,10 @@ frontend http-8080
   bind *:8080
   acl is_minio_host       hdr(host) -i minio.devops.lab
   acl is_keycloak         hdr(host) -i keycloak.devops.lab
-  acl is_rancher_gui      hdr(host) -i *.rancher.devops.lab
-
+  
   use_backend minio-backend-9001    if is_minio_host
   use_backend keycloak-backend      if is_keycloak
-  use_backend rancher-backend-gui   if is_rancher_gui
+
 
 frontend k8s-api-6443
   mode tcp
@@ -74,7 +73,6 @@ frontend k8s-api-6443
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
   bind *:6443
   acl is_rancher_cluster  hdr(host) -i cluster.rancher.devops.lab
-
   use_backend rancher-backend-6443  if is_rancher_cluster
 
 frontend http-443
@@ -82,6 +80,8 @@ frontend http-443
   http-request set-header X-Url-Scheme: https
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
   bind *:443
+  acl is_rancher_gui      hdr(host) -i *.rancher.devops.lab
+  use_backend rancher-backend-gui   if is_rancher_gui
 
 backend minio-backend-9001
   mode http
