@@ -1,0 +1,16 @@
+[Unit]
+Description=Keycloak Server
+After=network-online.target
+Wants=network-online.target
+AssertFileIsExecutable=/opt/keycloak/bin/kc.sh
+
+[Service]
+EnvironmentFile=-/etc/default/keycloak
+User=keycloak
+Group=keycloak
+WorkingDirectory=/home/keycloak
+ExecStart=/opt/keycloak/bin/kc.sh --config-file=/opt/keycloak/conf/keycloak.conf start-dev
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
