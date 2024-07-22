@@ -55,6 +55,14 @@ listen rancher-internal-9345
   server rancher-2 rancher-2.devops.lab:9345 verify none check
   server rancher-3 rancher-3.devops.lab:9345 verify none check
 
+listen k8s-api-6443
+  bind *:6443
+  mode tcp
+  balance roundrobin
+  server rancher-1 rancher-1.devops.lab:6443 verify none check
+  server rancher-2 rancher-2.devops.lab:6443 verify none check
+  server rancher-3 rancher-3.devops.lab:6443 verify none check
+
 frontend http-8080
   mode http
   http-request set-header X-Url-Scheme: https
@@ -67,16 +75,15 @@ frontend http-8080
   use_backend keycloak-backend      if is_keycloak
 
 
-frontend k8s-api-6443
-  mode tcp
-  http-request set-header X-Url-Scheme: https
-  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-  bind *:6443
-  acl is_rancher_cluster  hdr(host) -i cluster.rancher.devops.lab
-  use_backend rancher-backend-6443  if is_rancher_cluster
+#frontend k8s-api-6443
+#  mode tcp
+#  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+#  bind *:6443
+#  acl is_rancher_cluster  hdr(host) -i cluster.rancher.devops.lab
+#  use_backend rancher-backend-6443  if is_rancher_cluster
 
 frontend http-443
-  mode https
+  mode http
   http-request set-header X-Url-Scheme: https
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
   bind *:443
@@ -88,12 +95,12 @@ backend minio-backend-9001
   balance roundrobin
   server minio-1 minio.devops.lab:9001 verify none check
 
-backend rancher-backend-6443
-  mode tcp
-  balance roundrobin
-  server rancher-1 rancher-1.devops.lab:6443 verify none check
-  server rancher-2 rancher-2.devops.lab:6443 verify none check
-  server rancher-3 rancher-3.devops.lab:6443 verify none check
+#backend rancher-backend-6443
+#  mode tcp
+#  balance roundrobin
+#  server rancher-1 rancher-1.devops.lab:6443 verify none check
+#  server rancher-2 rancher-2.devops.lab:6443 verify none check
+#  server rancher-3 rancher-3.devops.lab:6443 verify none check
 
 backend rancher-backend-gui
   mode http
