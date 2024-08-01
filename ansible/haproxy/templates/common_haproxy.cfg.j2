@@ -55,13 +55,42 @@ listen rancher-internal-9345
   server rancher-2 rancher-2.devops.lab:9345 verify none check
   server rancher-3 rancher-3.devops.lab:9345 verify none check
 
-listen k8s-api-6443
-  bind *:6443
+frontend k8s_api_frontend
+    bind *:6443
+    acl is_rancher        hdr(host) -i *.rancher.devops.lab
+    acl is_openshift      hdr(host) -i *ocp.lan
+    mode tcp
+    use_backend rancher-api-6443    if  is_rancher
+    use_backend openshift-api-6443  if  is_openshift
+
+backend rancher-api-6443
+    mode tcp
+    http-request set-header X-Url-Scheme: https
+    http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+    balance roundrobin
+    server rancher-1 rancher-1.devops.lab:6443 verify none check
+    server rancher-2 rancher-2.devops.lab:6443 verify none check
+    server rancher-3 rancher-3.devops.lab:6443 verify none check
+
+backend openshift-api-6443
+    mode tcp
+    http-request set-header X-Url-Scheme: https
+    http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+    balance roundrobin
+    server      ocp-bootstrap ocp-bootstrap.lab.ocp.lan:6443 check
+    server      ocp-cp-1 ocp-cp-1.lab.ocp.lan:6443 check
+    server      ocp-cp-2 ocp-cp-2.lab.ocp.lan:6443 check
+    server      ocp-cp-3 ocp-cp-3.lab.ocp.lan:6443 check
+
+
+listen openshift-22623
+  bind *:22623
   mode tcp
-  balance roundrobin
-  server rancher-1 rancher-1.devops.lab:6443 verify none check
-  server rancher-2 rancher-2.devops.lab:6443 verify none check
-  server rancher-3 rancher-3.devops.lab:6443 verify none check
+  balance source
+  server      ocp-bootstrap ocp-bootstrap.lab.ocp.lan:22623 check
+  server      ocp-cp-1 ocp-cp-1.lab.ocp.lan:22623 check
+  server      ocp-cp-2 ocp-cp-2.lab.ocp.lan:22623 check
+  server      ocp-cp-3 ocp-cp-3.lab.ocp.lan:22623 check
 
 frontend http-8080
   mode http
@@ -76,32 +105,23 @@ frontend http-8080
   use_backend keycloak-backend      if is_keycloak
 
 
-#frontend k8s-api-6443
-#  mode tcp
-#  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-#  bind *:6443
-#  acl is_rancher_cluster  hdr(host) -i cluster.rancher.devops.lab
-#  use_backend rancher-backend-6443  if is_rancher_cluster
-
 frontend http-443
   mode http
   http-request set-header X-Url-Scheme: https
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
   bind *:443
-  acl is_rancher_gui      hdr(host) -i *.rancher.devops.lab
-  use_backend rancher-backend-gui   if is_rancher_gui
+
+  acl is_rancher_gui        hdr(host) -i *.rancher.devops.lab
+  acl is_openshift_gui      hdr(host) -i *ocp.lab
+
+  use_backend rancher-backend-gui     if is_rancher_gui
+  use_backend openshift-backend-gui   if is_openshift_gui
 
 backend minio-backend-9001
   mode http
   balance roundrobin
   server minio-1 minio.devops.lab:9001 verify none check
 
-#backend rancher-backend-6443
-#  mode tcp
-#  balance roundrobin
-#  server rancher-1 rancher-1.devops.lab:6443 verify none check
-#  server rancher-2 rancher-2.devops.lab:6443 verify none check
-#  server rancher-3 rancher-3.devops.lab:6443 verify none check
 
 backend rancher-backend-gui
   mode http
@@ -109,6 +129,13 @@ backend rancher-backend-gui
   server rancher-1 rancher-1.devops.lab:443 verify none check
   server rancher-2 rancher-2.devops.lab:443 verify none check
   server rancher-3 rancher-3.devops.lab:443 verify none check
+
+backend openshift-backend-gui
+  mode http
+  balance roundrobin
+  server openshift-1 console-openshift-console.apps.lab.ocp.lan:443 verify none check
+  server openshift-2 console-openshift-console.apps.lab.ocp.lan:443 verify none check
+  server openshift-3 console-openshift-console.apps.lab.ocp.lan:443 verify none check
 
 backend keycloak-backend
   mode http

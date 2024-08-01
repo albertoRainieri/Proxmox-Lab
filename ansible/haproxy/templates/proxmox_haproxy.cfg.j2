@@ -46,6 +46,14 @@ listen k8s-api-6443
   balance roundrobin
   server common 192.168.2.10:6443 verify none check
 
+listen openshift-22623
+    bind :22623
+    mode tcp
+    http-request set-header X-Url-Scheme: https
+    http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+    balance roundrobin
+    server common 192.168.2.10:22623 verify none check
+
 listen http-8080
   mode http
   bind *:8080
