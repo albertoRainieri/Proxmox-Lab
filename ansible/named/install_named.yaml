@@ -6,21 +6,33 @@
 
     - name: install named
       package: 
-        name: bind9
+        name: bind
         state: present
       notify: 
         - restart named
     
     - name: copy zone dns 
       template:
-        src: nomad.conf.js
-        dest: /etc/nomad.conf
+        src: templates/named.conf.j2
+        dest: /etc/named.conf
       notify: restart named
     
     - name: copy entry dns 
       template:
-        src: named.devops.lab.j2
-        dest: /var/nomad/named.devops.lab
+        src: templates/named.devops.lab.j2
+        dest: /var/named/named.devops.lab
+      notify: restart named
+
+    - name: copy entry dns 
+      template:
+        src: templates/named.ocp.lan.j2
+        dest: /var/named/named.ocp.lan
+      notify: restart named
+
+    - name: copy entry dns 
+      template:
+        src: templates/ocp.lan.reverse.j2
+        dest: /var/named/ocp.lan.reverse
       notify: restart named
     
   handlers:

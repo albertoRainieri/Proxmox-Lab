@@ -70,6 +70,7 @@ frontend http-8080
   bind *:8080
   acl is_minio_host       hdr(host) -i minio.devops.lab
   acl is_keycloak         hdr(host) -i keycloak.devops.lab
+  acl is_httpd            hdr(host) -i httpd.devops.lab
   
   use_backend minio-backend-9001    if is_minio_host
   use_backend keycloak-backend      if is_keycloak
