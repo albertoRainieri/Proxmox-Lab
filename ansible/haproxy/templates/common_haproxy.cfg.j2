@@ -58,7 +58,7 @@ listen rancher-internal-9345
 frontend k8s_api_frontend
     bind *:6443
     acl is_rancher        hdr(host) -i cluster.rancher.devops.lab
-    acl is_openshift      hdr(host) -i *ocp.lan
+    acl is_openshift      hdr(host) -i cluster.openshift.devops.lab
     mode tcp
     use_backend rancher-api-6443    if  is_rancher
     use_backend openshift-api-6443  if  is_openshift
@@ -77,20 +77,20 @@ backend openshift-api-6443
     http-request set-header X-Url-Scheme: https
     http-request set-header X-Forwarded-Host %[req.hdr(Host)]
     balance roundrobin
-    server      ocp-bootstrap ocp-bootstrap.devops.lab.lan:6443 check
-    server      ocp-cp-1 ocp-cp-1.devops.lab.lan:6443 check
-    server      ocp-cp-2 ocp-cp-2.devops.lab.lan:6443 check
-    server      ocp-cp-3 ocp-cp-3.devops.lab.lan:6443 check
+    server      ocp-bootstrap ocp-bootstrap.devops.lab:6443 check
+    server      ocp-cp-1 ocp-cp-1.devops.lab:6443 check
+    server      ocp-cp-2 ocp-cp-2.devops.lab:6443 check
+    server      ocp-cp-3 ocp-cp-3.devops.lab:6443 check
 
 
 listen openshift-22623
   bind *:22623
   mode tcp
   balance source
-  server      ocp-bootstrap ocp-bootstrap.devops.lab.lan:22623 check
-  server      ocp-cp-1 ocp-cp-1.devops.lab.lan:22623 check
-  server      ocp-cp-2 ocp-cp-2.devops.lab.lan:22623 check
-  server      ocp-cp-3 ocp-cp-3.devops.lab.lan:22623 check
+  server      ocp-bootstrap ocp-bootstrap.devops.lab:22623 check
+  server      ocp-cp-1 ocp-cp-1.devops.lab:22623 check
+  server      ocp-cp-2 ocp-cp-2.devops.lab:22623 check
+  server      ocp-cp-3 ocp-cp-3.devops.lab:22623 check
 
 frontend http-8080
   mode http
@@ -133,9 +133,9 @@ backend rancher-backend-gui
 backend openshift-backend-gui
   mode http
   balance roundrobin
-  server openshift-1 console-openshift-console.apps.devops.lab.lan:443 verify none check
-  server openshift-2 console-openshift-console.apps.devops.lab.lan:443 verify none check
-  server openshift-3 console-openshift-console.apps.devops.lab.lan:443 verify none check
+  server openshift-1 console-openshift-console.apps.devops.lab:443 verify none check
+  server openshift-2 console-openshift-console.apps.devops.lab:443 verify none check
+  server openshift-3 console-openshift-console.apps.devops.lab:443 verify none check
 
 backend keycloak-backend
   mode http

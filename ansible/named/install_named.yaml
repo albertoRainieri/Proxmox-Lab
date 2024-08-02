@@ -25,12 +25,6 @@
 
     - name: copy entry dns 
       template:
-        src: templates/named.ocp.lan.j2
-        dest: /var/named/named.ocp.lan
-      notify: restart named
-
-    - name: copy entry dns 
-      template:
         src: templates/ocp.lan.reverse.j2
         dest: /var/named/ocp.lan.reverse
       notify: restart named

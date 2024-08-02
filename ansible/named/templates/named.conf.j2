@@ -62,12 +62,6 @@ zone "devops.lab" IN {
     allow-update { none; };
 };
 
-zone "ocp.lan" IN {
-    type master;
-    file "named.ocp.lan";
-    allow-update { none; };
-};
-
 zone "2.168.192.in-addr.arpa" {
     type master;
     file "ocp.lan.reverse";  # 192.168.2.0/24 subnet
