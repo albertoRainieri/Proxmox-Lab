@@ -29,6 +29,7 @@ ocp-bootstrap.devops.lab.       IN      A      192.168.2.200
 ocp-cp-1.devops.lab.         	IN      A      192.168.2.201
 ocp-cp-2.devops.lab.         	IN      A      192.168.2.202
 ocp-cp-3.devops.lab.         	IN      A      192.168.2.203
+api-int.okd.devops.lab.			IN 		A 	   192.168.2.10
 
 ; Worker Nodes
 ocp-w-1.devops.lab.       	 	IN      A      192.168.2.211
@@ -36,6 +37,7 @@ ocp-w-2.devops.lab.        		IN      A      192.168.2.212
 
 ; OpenShift Internal - Load balancer
 api.devops.lab.        			IN    A    192.168.2.10
+api.okd.devops.lab.        			IN    A    192.168.2.10
 api-int.devops.lab.    			IN    A    192.168.2.10
 *.apps.devops.lab.     			IN    A    192.168.2.10
 
@@ -49,7 +51,7 @@ _etcd-server-ssl._tcp.devops.lab.    86400     	IN    SRV     0    10    2380   
 _etcd-server-ssl._tcp.devops.lab.    86400     	IN    SRV     0    10    2380    etcd-1.lab
 _etcd-server-ssl._tcp.devops.lab.    86400     	IN    SRV     0    10    2380    etcd-2.lab
 
-oauth-openshift.apps.devops.lab.     			IN     A     192.168.2.10
-console-openshift-console.apps.devops.lab.     	IN     A     192.168.2.10
+oauth-openshift.apps.okd.devops.lab.     			IN     A     192.168.2.10
+console-openshift-console.apps.okd.devops.lab.     	IN     A     192.168.2.10
 ;EOF
 

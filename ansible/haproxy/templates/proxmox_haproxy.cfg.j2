@@ -38,7 +38,15 @@ listen rancher-internal-9345
   balance roundrobin
   server common 192.168.2.10:9345 verify none check
 
-listen k8s-api-6443
+listen rancher-api-6444
+  bind *:6444
+  mode tcp
+  http-request set-header X-Url-Scheme: https
+  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+  balance roundrobin
+  server common 192.168.2.10:6444 verify none check
+
+listen openshift-api-6443
   bind *:6443
   mode tcp
   http-request set-header X-Url-Scheme: https
