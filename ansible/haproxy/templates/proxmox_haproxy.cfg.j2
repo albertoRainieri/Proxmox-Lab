@@ -72,7 +72,7 @@ listen http-8080
   server common 192.168.2.10:8080 verify none check
 
 listen https-443
-  mode http
+  mode tcp
   bind *:443
   http-request set-header X-Url-Scheme: https
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]

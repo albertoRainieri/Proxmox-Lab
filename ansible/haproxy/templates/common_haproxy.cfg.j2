@@ -87,6 +87,17 @@ listen openshift-22623
   server      ocp-cp-2 ocp-cp-2.devops.lab:22623 check
   server      ocp-cp-3 ocp-cp-3.devops.lab:22623 check
 
+listen openshift-gui-443
+  mode tcp
+  http-request set-header X-Url-Scheme: https
+  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+  bind *:443
+  balance roundrobin
+  server openshift-1 ocp-cp-1.devops.lab:443 verify none check
+  server openshift-2 ocp-cp-2.devops.lab:443 verify none check
+  server openshift-3 ocp-cp-3.devops.lab:443 verify none check
+
+
 frontend http-8080
   mode http
   http-request set-header X-Url-Scheme: https
@@ -100,39 +111,38 @@ frontend http-8080
   use_backend keycloak-backend      if is_keycloak
 
 
-frontend http-443
-  mode http
-  http-request set-header X-Url-Scheme: https
-  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-  bind *:443
-
-  acl is_rancher_gui        hdr(host) -i *.rancher.devops.lab
-  acl is_openshift_gui      hdr(host) -i *.okd.devops.lab
-
-  use_backend rancher-backend-gui     if is_rancher_gui
-  use_backend openshift-backend-gui   if is_openshift_gui
-
 backend minio-backend-9001
   mode http
   balance roundrobin
   server minio-1 minio.devops.lab:9001 verify none check
 
-
-backend rancher-backend-gui
-  mode http
-  balance roundrobin
-  server rancher-1 rancher-1.devops.lab:443 verify none check
-  server rancher-2 rancher-2.devops.lab:443 verify none check
-  server rancher-3 rancher-3.devops.lab:443 verify none check
-
-backend openshift-backend-gui
-  mode http
-  balance roundrobin
-  server openshift-1 ocp-cp-1.devops.lab:443 verify none check
-  server openshift-2 ocp-cp-2.devops.lab:443 verify none check
-  server openshift-3 ocp-cp-3.devops.lab:443 verify none check
-
 backend keycloak-backend
   mode http
   balance roundrobin
   server keycloack-1 keycloak.devops.lab:8888 verify none check
+
+# frontend http-443
+#   mode http
+#   http-request set-header X-Url-Scheme: https
+#   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+#   bind *:443
+
+#   acl is_rancher_gui        hdr(host) -i *.rancher.devops.lab
+#   acl is_openshift_gui      hdr(host) -i *.okd.devops.lab
+
+#   use_backend rancher-backend-gui     if is_rancher_gui
+#   use_backend openshift-backend-gui   if is_openshift_gui
+
+# backend rancher-backend-gui
+#   mode http
+#   balance roundrobin
+#   server rancher-1 rancher-1.devops.lab:443 verify none check
+#   server rancher-2 rancher-2.devops.lab:443 verify none check
+#   server rancher-3 rancher-3.devops.lab:443 verify none check
+
+# backend openshift-backend-gui
+#   mode http
+#   balance roundrobin
+#   server openshift-1 ocp-cp-1.devops.lab:443 verify none check
+#   server openshift-2 ocp-cp-2.devops.lab:443 verify none check
+#   server openshift-3 ocp-cp-3.devops.lab:443 verify none check
