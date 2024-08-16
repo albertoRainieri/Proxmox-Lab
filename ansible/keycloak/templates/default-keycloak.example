@@ -1,0 +1,6 @@
+KEYCLOAK_ADMIN=
+KEYCLOAK_ADMIN_PASSWORD=
+KC_DB=postgres
+KC_DB_USERNAME=
+KC_DB_PASSWORD=
+KC_DB_URL=jdbc:postgresql://keycloak.http.devops.lab:5432/keycloak

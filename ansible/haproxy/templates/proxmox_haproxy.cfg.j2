@@ -78,3 +78,12 @@ listen https-443
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
   balance roundrobin
   server common 192.168.2.10:443 verify none check
+
+listen keycloak
+  mode http
+  bind *:8880
+  bind *:8443 ssl crt /usr/local/share/ca-certificates/keycloak.site.pem
+  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+  http-request replace-header Host ([^:]+) \1
+  balance roundrobin
+  server common 192.168.2.10:8888 verify none check

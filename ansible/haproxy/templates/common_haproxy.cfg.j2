@@ -97,6 +97,16 @@ listen openshift-gui-443
   server openshift-2 ocp-cp-2.devops.lab:443 verify none check
   server openshift-3 ocp-cp-3.devops.lab:443 verify none check
 
+# frontend frontend-8443
+#   mode http
+#   http-request set-header X-Url-Scheme: https
+#   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+#   bind *:8443
+#   balance roundrobin
+#   acl is_keycloak         hdr(host) -i keycloak.devops.lab
+
+#   use_backend keycloak-backend      if is_keycloak
+
 
 frontend http-8080
   mode http
@@ -121,17 +131,6 @@ backend keycloak-backend
   balance roundrobin
   server keycloack-1 keycloak.devops.lab:8888 verify none check
 
-# frontend http-443
-#   mode http
-#   http-request set-header X-Url-Scheme: https
-#   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-#   bind *:443
-
-#   acl is_rancher_gui        hdr(host) -i *.rancher.devops.lab
-#   acl is_openshift_gui      hdr(host) -i *.okd.devops.lab
-
-#   use_backend rancher-backend-gui     if is_rancher_gui
-#   use_backend openshift-backend-gui   if is_openshift_gui
 
 # backend rancher-backend-gui
 #   mode http
