@@ -97,6 +97,16 @@ listen openshift-gui-443
   server openshift-2 ocp-cp-2.devops.lab:443 verify none check
   server openshift-3 ocp-cp-3.devops.lab:443 verify none check
 
+listen openshift-app-8082
+  mode tcp
+  http-request set-header X-Url-Scheme: https
+  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+  bind *:8082
+  balance roundrobin
+  server openshift-1 ocp-cp-1.devops.lab:80 verify none check
+  server openshift-2 ocp-cp-2.devops.lab:80 verify none check
+  server openshift-3 ocp-cp-3.devops.lab:80 verify none check
+
 # frontend frontend-8443
 #   mode http
 #   http-request set-header X-Url-Scheme: https
