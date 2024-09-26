@@ -1,8 +1,9 @@
 - name: install haproxy
-  hosts: "common"
-  remote_user: 'root'
+  hosts: "proxmox_jumphost"
+  #remote_user: 'root'
+  become: true
   vars:
-    - file_conf: "common_haproxy.cfg.j2" 
+    - file_conf: "jump_proxmox_haproxy.cfg.j2" 
 
   tasks:
 
@@ -10,8 +11,8 @@
       package: 
         name: haproxy
         state: present
-      notify:
-       - restart haproxy
+      #notify:
+      # - restart haproxy
 
 
     - name: copy configuration file

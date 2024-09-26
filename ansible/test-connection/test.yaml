@@ -1,0 +1,16 @@
+- name: test connessione e privilegi
+  hosts: "proxmox_jumphost"
+  become: true
+  tasks:
+
+    - name: test connessione
+      ping:
+
+    - name: test commando
+      command:  cat  /etc/shadow
+      register: output
+      ignore_eror: true 
+    
+    - name: print
+      debug:
+        var: output
