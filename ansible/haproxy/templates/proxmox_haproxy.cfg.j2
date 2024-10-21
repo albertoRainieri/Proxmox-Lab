@@ -62,6 +62,14 @@ listen openshift-22623
     balance roundrobin
     server common 192.168.2.10:22623 verify none check
 
+listen git_ssh
+    bind *:2223
+    mode tcp
+    log-format "%ci:%cp [%t] %ft %b/%s %Tw/%Tc/%Tt %B %ts %ac/%fc/%bc/%sc/%rc %sq/%bq dst:%[var(sess.dst)] "
+    tcp-request content set-var(sess.dst) ssl_fc_sni
+    http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+    server ocp-w-2 192.168.2.212:30022 verify none check
+
 listen http-8080
   mode http
   bind *:8080
