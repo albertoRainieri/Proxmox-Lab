@@ -6,3 +6,5 @@ ansible/minio/templates/minio
 access
 backend.tf
 .terraform
+credenziali-openshift
+default-keycloak
