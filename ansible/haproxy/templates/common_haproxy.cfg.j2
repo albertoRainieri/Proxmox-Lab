@@ -107,6 +107,17 @@ listen openshift-app-8082
   server openshift-2 ocp-cp-2.devops.lab:80 verify none check
   server openshift-3 ocp-cp-3.devops.lab:80 verify none check
 
+listen openshift-artifactory-8083
+  mode tcp
+  bind *:8083
+  balance roundrobin
+  http-request set-header X-Url-Scheme: https
+  http-request set-header X-Forwarded-For %[req.hdr(Host)]
+  http-request set-header X-Forwarded-Port %[dst_port]
+  server openshift-1 ocp-cp-1.devops.lab:80 verify none check
+  server openshift-2 ocp-cp-2.devops.lab:80 verify none check
+  server openshift-3 ocp-cp-3.devops.lab:80 verify none check
+
 # frontend frontend-8443
 #   mode http
 #   http-request set-header X-Url-Scheme: https

@@ -88,6 +88,14 @@ listen http-8081
   balance roundrobin
   server common 192.168.2.10:8082 verify none check
 
+listen http-8083
+  mode http
+  bind *:80
+  balance roundrobin
+  server openshift-1 ocp-cp-1.devops.lab:80 verify none check
+  server openshift-2 ocp-cp-2.devops.lab:80 verify none check
+  server openshift-3 ocp-cp-3.devops.lab:80 verify none check
+
 listen https-443
   mode tcp
   bind *:443
